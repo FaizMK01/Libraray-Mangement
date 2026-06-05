@@ -176,28 +176,31 @@ class LoginScreen extends StatelessWidget {
               ),
               const SizedBox(height: 16),
 
-              // Login as Admin button
-              // OutlinedButton.icon(
-              //   onPressed: () {
-              //     controller.fillAdminCredentials();
-              //     controller.login();
-              //   },
-              //   icon: const Icon(Icons.shield_outlined,
-              //       color: AppColors.primary, size: 18),
-              //   label: const Text(
-              //     'Login as Admin',
-              //     style: TextStyle(
-              //         color: AppColors.primary,
-              //         fontWeight: FontWeight.w500),
-              //   ),
-              //   style: OutlinedButton.styleFrom(
-              //     minimumSize: const Size(double.infinity, 50),
-              //     side: const BorderSide(color: AppColors.primary),
-              //     shape: RoundedRectangleBorder(
-              //         borderRadius: BorderRadius.circular(12)),
-              //   ),
-              // ),
-              // const SizedBox(height: 28),
+              OutlinedButton.icon(
+                onPressed: () {
+                  Get.toNamed(AppRoutes.adminLoginView);
+                },
+                icon: const Icon(
+                  Icons.shield_outlined,
+                  color: AppColors.primary,
+                  size: 18,
+                ),
+                label: const Text(
+                  'Login as Admin',
+                  style: TextStyle(
+                    color: AppColors.primary,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                style: OutlinedButton.styleFrom(
+                  minimumSize: const Size(double.infinity, 50),
+                  side: const BorderSide(color: AppColors.primary),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 28),
 
               // Don't have account
               Center(

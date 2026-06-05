@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 
 import '../screens/admin/admin_dashboard_screen.dart';
+import '../screens/admin/admin_login_view.dart';
 import '../screens/auth/forgot_password_screen.dart';
 import '../screens/auth/login_screen.dart';
 import '../screens/auth/signup_screen.dart';
@@ -14,6 +15,7 @@ class AppRoutes {
   static const forgotPassword = '/forgot-password';
   static const adminDashboard = '/admin-dashboard';
   static const userHome = '/user-home';
+  static const adminLoginView = '/admin-login-view';
 
   static final pages = [
     GetPage(name: splash, page: () => const SplashScreen()),
@@ -22,5 +24,6 @@ class AppRoutes {
     GetPage(name: forgotPassword, page: () => const ForgotPasswordScreen()),
     GetPage(name: adminDashboard, page: () => const AdminDashboardScreen()),
     GetPage(name: userHome, page: () => const UserHomeScreen()),
+    GetPage(name: adminLoginView, page: () => const AdminLoginView()),
   ];
 }

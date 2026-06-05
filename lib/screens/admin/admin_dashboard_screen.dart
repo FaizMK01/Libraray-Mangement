@@ -1,8 +1,7 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../routes/app_routes.dart';
+import '../../controllers/admin_login_controller.dart';
 import '../../utils/app_theme.dart';
 
 class AdminDashboardScreen extends StatelessWidget {
@@ -22,8 +21,8 @@ class AdminDashboardScreen extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.logout, color: Colors.white),
             onPressed: () async {
-              await FirebaseAuth.instance.signOut();
-              Get.offAllNamed(AppRoutes.login);
+              final controller = Get.put(AdminLoginController());
+              await controller.logout();
             },
           ),
         ],
