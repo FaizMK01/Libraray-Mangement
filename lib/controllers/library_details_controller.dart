@@ -1,11 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../models/book_model.dart';
 import '../models/book_request_model.dart';
+import '../utils/app_snackbar.dart';
 import '../utils/url_helper.dart';
 
 class LibraryDetailsController extends GetxController {
@@ -59,12 +59,9 @@ class LibraryDetailsController extends GetxController {
 
     final url = _resolveReadUrl();
     if (url == null) {
-      Get.snackbar(
-        'Error',
-        'No read link available for this book',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
+      AppSnackbar.error(
+        'Link Unavailable',
+        'No reading link is available for this book.',
       );
       return;
     }
@@ -79,21 +76,15 @@ class LibraryDetailsController extends GetxController {
       );
 
       if (!launched) {
-        Get.snackbar(
-          'Error',
+        AppSnackbar.error(
+          'Unable to Open',
           'Could not open the book. Please try again.',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
         );
       }
     } catch (_) {
-      Get.snackbar(
-        'Error',
+      AppSnackbar.error(
+        'Unable to Open',
         'Could not open the book. Please try again.',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
       );
     } finally {
       isOpeningBook.value = false;

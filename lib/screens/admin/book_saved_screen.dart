@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 
 import '../../routes/app_routes.dart';
 import '../../utils/app_theme.dart';
+import '../../widgets/admin_logout_fab.dart';
 
 class BookSavedScreen extends StatelessWidget {
   const BookSavedScreen({super.key});
@@ -17,21 +18,19 @@ class BookSavedScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: AppColors.background,
+      floatingActionButton: const AdminLogoutFab(),
       appBar: AppBar(
         backgroundColor: AppColors.background,
+        foregroundColor: AppColors.textPrimary,
         elevation: 0,
         automaticallyImplyLeading: false,
         title: const Text(
-          'SAVED!',
-          style: TextStyle(
-            color: AppColors.textPrimary,
-            fontSize: 18,
-            fontWeight: FontWeight.w700,
-          ),
+          'Book Saved',
+          style: TextStyle(fontWeight: FontWeight.w700),
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.close, color: AppColors.textPrimary),
+            icon: const Icon(Icons.close),
             onPressed: () => Get.offAllNamed(AppRoutes.adminDashboard),
           ),
         ],
@@ -40,10 +39,10 @@ class BookSavedScreen extends StatelessWidget {
         padding: const EdgeInsets.all(24),
         child: Column(
           children: [
-            const SizedBox(height: 40),
+            const SizedBox(height: 32),
             Container(
-              width: 80,
-              height: 80,
+              width: 88,
+              height: 88,
               decoration: const BoxDecoration(
                 color: AppColors.successLight,
                 shape: BoxShape.circle,
@@ -51,51 +50,35 @@ class BookSavedScreen extends StatelessWidget {
               child: const Icon(
                 Icons.check_rounded,
                 color: AppColors.success,
-                size: 44,
+                size: 48,
               ),
             ),
             const SizedBox(height: 24),
-            const Text(
-              'Book added!',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.w700,
-                color: AppColors.textPrimary,
-              ),
-            ),
+            const Text('Book Added Successfully', style: AppTextStyles.heading1),
             const SizedBox(height: 8),
             const Text(
-              'Firestore mein save ho gaya',
-              style: TextStyle(
-                fontSize: 14,
-                color: AppColors.textSecondary,
-              ),
+              'The book has been saved to your library.',
+              style: AppTextStyles.subtitle,
+              textAlign: TextAlign.center,
             ),
             const Spacer(),
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(18),
               decoration: BoxDecoration(
                 color: AppColors.surface,
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: BorderRadius.circular(16),
                 border: Border.all(color: AppColors.border),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Firestore record',
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.textSecondary,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  _RecordRow(label: 'title', value: '"$title"'),
-                  _RecordRow(label: 'author', value: '"$author"'),
-                  _RecordRow(label: 'quantity', value: '$quantity'),
-                  _RecordRow(label: 'available', value: '$available'),
+                  const Text('Saved Record', style: AppTextStyles.sectionTitle),
+                  const SizedBox(height: 14),
+                  _RecordRow(label: 'Title', value: title),
+                  _RecordRow(label: 'Author', value: author),
+                  _RecordRow(label: 'Quantity', value: '$quantity'),
+                  _RecordRow(label: 'Available', value: '$available'),
                 ],
               ),
             ),
@@ -104,7 +87,7 @@ class BookSavedScreen extends StatelessWidget {
               onPressed: () => Get.offAllNamed(AppRoutes.adminDashboard),
               child: const Text('Back to Dashboard'),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 80),
           ],
         ),
       ),
@@ -121,14 +104,32 @@ class _RecordRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 6),
-      child: Text(
-        '$label: $value',
-        style: const TextStyle(
-          fontSize: 13,
-          color: AppColors.textPrimary,
-          fontFamily: 'monospace',
-        ),
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 90,
+            child: Text(
+              label,
+              style: const TextStyle(
+                fontSize: 13,
+                color: AppColors.textSecondary,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+          Expanded(
+            child: Text(
+              value,
+              style: const TextStyle(
+                fontSize: 13,
+                color: AppColors.textPrimary,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

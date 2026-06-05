@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import '../../controllers/user_requests_controller.dart';
 import '../../models/book_request_model.dart';
 import '../../utils/app_theme.dart';
+import '../../widgets/admin_logout_fab.dart';
 
 class UserRequestsScreen extends StatelessWidget {
   const UserRequestsScreen({super.key});
@@ -14,31 +15,18 @@ class UserRequestsScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: AppColors.background,
+      floatingActionButton: const AdminLogoutFab(),
       appBar: AppBar(
-        backgroundColor: AppColors.background,
+        backgroundColor: AppColors.surface,
+        foregroundColor: AppColors.textPrimary,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back_ios_new_rounded,
-            color: AppColors.textPrimary,
-            size: 20,
-          ),
+          icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
           onPressed: () => Get.back(),
         ),
-        title: const Row(
-          children: [
-            Icon(Icons.notifications_outlined,
-                color: AppColors.primary, size: 22),
-            SizedBox(width: 8),
-            Text(
-              'User Requests',
-              style: TextStyle(
-                color: AppColors.textPrimary,
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
+        title: const Text(
+          'User Requests',
+          style: TextStyle(fontWeight: FontWeight.w600),
         ),
       ),
       body: Obx(() {
@@ -58,7 +46,7 @@ class UserRequestsScreen extends StatelessWidget {
         }
 
         return ListView.builder(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.fromLTRB(20, 20, 20, 100),
           itemCount: controller.requests.length,
           itemBuilder: (context, index) {
             final request = controller.requests[index];

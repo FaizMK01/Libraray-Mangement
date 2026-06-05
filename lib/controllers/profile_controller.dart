@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../routes/app_routes.dart';
+import '../utils/app_dialogs.dart';
+import '../utils/app_snackbar.dart';
 
 class ProfileController extends GetxController {
   final formKey = GlobalKey<FormState>();
@@ -70,21 +72,14 @@ class ProfileController extends GetxController {
         'updatedAt': FieldValue.serverTimestamp(),
       });
 
-      Get.snackbar(
+      AppSnackbar.success(
         'Profile Updated',
-        'Your changes have been saved',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: const Color(0xFFEAF3DE),
-        colorText: const Color(0xFF0F6E56),
-        icon: const Icon(Icons.check_circle, color: Color(0xFF0F6E56)),
+        'Your profile changes have been saved successfully.',
       );
-    } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Failed to update profile',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
+    } catch (_) {
+      AppSnackbar.error(
+        'Update Failed',
+        'Unable to update your profile. Please try again.',
       );
     } finally {
       isSaving.value = false;
@@ -92,28 +87,9 @@ class ProfileController extends GetxController {
   }
 
   Future<void> logout() async {
-    final confirmed = await Get.dialog<bool>(
-      AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Logout'),
-        content: const Text('Are you sure you want to logout?'),
-        actions: [
-          TextButton(
-            onPressed: () => Get.back(result: false),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () => Get.back(result: true),
-            child: const Text(
-              'Logout',
-              style: TextStyle(color: Color(0xFFA32D2D)),
-            ),
-          ),
-        ],
-      ),
-    );
+    final confirmed = await AppDialogs.confirmLogout();
 
-    if (confirmed == true) {
+    if (confirmed) {
       await _auth.signOut();
       Get.offAllNamed(AppRoutes.login);
     }

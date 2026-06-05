@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../models/book_request_model.dart';
+import '../utils/app_snackbar.dart';
 
 class UserRequestsController extends GetxController {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -22,15 +22,13 @@ class UserRequestsController extends GetxController {
         .orderBy('createdAt', descending: true)
         .snapshots()
         .listen((snapshot) {
-          requests.assignAll(
-            snapshot.docs
-                .map(
-                  (doc) => BookRequestModel.fromFirestore(doc.data(), doc.id),
-                )
-                .toList(),
-          );
-          isLoading.value = false;
-        });
+      requests.assignAll(
+        snapshot.docs
+            .map((doc) => BookRequestModel.fromFirestore(doc.data(), doc.id))
+            .toList(),
+      );
+      isLoading.value = false;
+    });
   }
 
   Future<void> approveRequest(BookRequestModel request) async {
@@ -40,21 +38,14 @@ class UserRequestsController extends GetxController {
         'updatedAt': FieldValue.serverTimestamp(),
       });
 
-      Get.snackbar(
-        'Approved',
-        '${request.userName} equest has been approved!',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: const Color(0xFFEAF3DE),
-        colorText: const Color(0xFF0F6E56),
-        icon: const Icon(Icons.check_circle, color: Color(0xFF0F6E56)),
+      AppSnackbar.success(
+        'Request Approved',
+        "${request.userName}'s request for \"${request.bookTitle}\" has been approved.",
       );
-    } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Failed to approve request',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
+    } catch (_) {
+      AppSnackbar.error(
+        'Approval Failed',
+        'Unable to approve this request. Please try again.',
       );
     }
   }
@@ -66,20 +57,14 @@ class UserRequestsController extends GetxController {
         'updatedAt': FieldValue.serverTimestamp(),
       });
 
-      Get.snackbar(
-        'Rejected',
-        '${request.userName} request has been rejected',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: const Color(0xFFFCEBEB),
-        colorText: const Color(0xFFA32D2D),
+      AppSnackbar.warning(
+        'Request Rejected',
+        "${request.userName}'s request for \"${request.bookTitle}\" has been rejected.",
       );
-    } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Failed to reject request',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
+    } catch (_) {
+      AppSnackbar.error(
+        'Rejection Failed',
+        'Unable to reject this request. Please try again.',
       );
     }
   }

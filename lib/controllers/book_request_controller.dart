@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 
 import '../models/book_model.dart';
 import '../routes/app_routes.dart';
+import '../utils/app_snackbar.dart';
 import '../utils/url_helper.dart';
 import 'library_details_controller.dart';
 
@@ -57,12 +58,9 @@ class BookRequestController extends GetxController {
           .get();
 
       if (existing.docs.isNotEmpty) {
-        Get.snackbar(
+        AppSnackbar.warning(
           'Already Requested',
-          'You have already requested this book',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.orange,
-          colorText: Colors.white,
+          'You have already submitted a request for this book.',
         );
         return;
       }
@@ -84,12 +82,9 @@ class BookRequestController extends GetxController {
         'createdAt': FieldValue.serverTimestamp(),
       });
 
-      Get.snackbar(
-        'Request Sent',
-        'Your request has been sent to admin',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green,
-        colorText: Colors.white,
+      AppSnackbar.success(
+        'Request Submitted',
+        'Your book request has been sent to the admin for approval.',
       );
 
       if (Get.isRegistered<LibraryDetailsController>()) {
@@ -97,12 +92,9 @@ class BookRequestController extends GetxController {
       }
       Get.offNamed(AppRoutes.libraryDetails, arguments: book);
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Failed to submit request',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
+      AppSnackbar.error(
+        'Submission Failed',
+        'Unable to submit your request. Please try again.',
       );
     } finally {
       isSubmitting.value = false;

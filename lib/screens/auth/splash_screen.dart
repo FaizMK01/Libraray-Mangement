@@ -5,6 +5,7 @@ import 'package:get_storage/get_storage.dart';
 
 import '../../routes/app_routes.dart';
 import '../../utils/app_theme.dart';
+import '../../widgets/app_logo.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -23,7 +24,6 @@ class _SplashScreenState extends State<SplashScreen> {
   Future<void> _navigate() async {
     await Future.delayed(const Duration(seconds: 2));
 
-    // Admin check
     final bool isAdminLoggedIn =
         GetStorage().read<bool>('isAdminLoggedIn') ?? false;
     if (isAdminLoggedIn) {
@@ -31,7 +31,6 @@ class _SplashScreenState extends State<SplashScreen> {
       return;
     }
 
-    // User check
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       Get.offAllNamed(AppRoutes.userHome);
@@ -49,41 +48,33 @@ class _SplashScreenState extends State<SplashScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
-              width: 100,
-              height: 100,
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.15),
-                borderRadius: BorderRadius.circular(28),
-              ),
-              child: const Icon(
-                Icons.library_books_rounded,
-                size: 56,
-                color: Colors.white,
-              ),
-            ),
-            const SizedBox(height: 24),
+            const AppLogo(size: 100, onPrimaryBackground: true),
+            const SizedBox(height: 28),
             const Text(
-              'Library',
+              'Library Management',
               style: TextStyle(
-                fontSize: 32,
+                fontSize: 28,
                 fontWeight: FontWeight.w700,
                 color: Colors.white,
-                letterSpacing: 1,
+                letterSpacing: -0.5,
               ),
             ),
-            const Text(
-              'Management System',
+            const SizedBox(height: 8),
+            Text(
+              'Your digital library, simplified',
               style: TextStyle(
                 fontSize: 15,
-                color: Colors.white70,
-                letterSpacing: 0.5,
+                color: Colors.white.withValues(alpha: 0.8),
               ),
             ),
-            const SizedBox(height: 60),
-            const CircularProgressIndicator(
-              color: Colors.white54,
-              strokeWidth: 2,
+            const SizedBox(height: 56),
+            const SizedBox(
+              width: 28,
+              height: 28,
+              child: CircularProgressIndicator(
+                color: Colors.white54,
+                strokeWidth: 2.5,
+              ),
             ),
           ],
         ),

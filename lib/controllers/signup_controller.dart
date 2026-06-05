@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../routes/app_routes.dart';
+import '../utils/app_snackbar.dart';
 
 class SignupController extends GetxController {
   final formKey = GlobalKey<FormState>();
@@ -47,13 +48,9 @@ class SignupController extends GetxController {
         'createdAt': FieldValue.serverTimestamp(),
       });
 
-      Get.snackbar(
-        'Account Created!',
-        'Welcome, ${nameController.text.trim()}',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green,
-        colorText: Colors.white,
-        duration: const Duration(seconds: 3),
+      AppSnackbar.success(
+        'Account Created',
+        'Welcome, ${nameController.text.trim()}! Your account is ready.',
       );
 
       Get.offAllNamed(AppRoutes.userHome);
@@ -66,13 +63,7 @@ class SignupController extends GetxController {
       } else if (e.code == 'invalid-email') {
         message = 'Invalid Email';
       }
-      Get.snackbar(
-        'Error',
-        message,
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      AppSnackbar.error('Signup Failed', message);
     } finally {
       isLoading.value = false;
     }

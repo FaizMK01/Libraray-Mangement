@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../routes/app_routes.dart';
+import '../utils/app_snackbar.dart';
 
 class LoginController extends GetxController {
+  final formKey = GlobalKey<FormState>();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
@@ -18,38 +20,32 @@ class LoginController extends GetxController {
   }
 
   Future<void> login() async {
-    final email = emailController.text.trim();
-    final password = passwordController.text.trim();
-
-    if (email.isEmpty || password.isEmpty) {
-      Get.snackbar(
-        'Error',
-        'Please fill the fields',
-        snackPosition: SnackPosition.BOTTOM,
-      );
-      return;
-    }
+    if (!formKey.currentState!.validate()) return;
 
     isLoading.value = true;
 
     try {
-      await _auth.signInWithEmailAndPassword(email: email, password: password);
-      Get.snackbar(
-        'Success',
-        'Login Successful!',
-        snackPosition: SnackPosition.BOTTOM,
+      await _auth.signInWithEmailAndPassword(
+        email: emailController.text.trim(),
+        password: passwordController.text.trim(),
+      );
+      AppSnackbar.success(
+        'Welcome Back',
+        'You have successfully logged in.',
       );
       Get.offAllNamed(AppRoutes.userHome);
     } on FirebaseAuthException catch (e) {
-      String message = 'Error occurred';
+      String message = 'An error occurred. Please try again.';
       if (e.code == 'user-not-found') {
-        message = 'User Not Found';
+        message = 'No account found with this email address.';
       } else if (e.code == 'wrong-password') {
-        message = 'Wrong Password';
+        message = 'Incorrect password. Please try again.';
       } else if (e.code == 'invalid-email') {
-        message = 'Invalid Email';
+        message = 'Please enter a valid email address.';
+      } else if (e.code == 'invalid-credential') {
+        message = 'Invalid email or password. Please try again.';
       }
-      Get.snackbar('Error', message, snackPosition: SnackPosition.BOTTOM);
+      AppSnackbar.error('Login Failed', message);
     } finally {
       isLoading.value = false;
     }

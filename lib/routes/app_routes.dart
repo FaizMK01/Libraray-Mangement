@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:library_mangement/screens/admin/admin_login_view.dart';
 
+import '../controllers/add_book_controller.dart';
 import '../screens/admin/add_book_screen.dart';
 import '../screens/admin/admin_book_details_screen.dart';
 import '../screens/admin/admin_dashboard_screen.dart';
@@ -37,7 +38,13 @@ class AppRoutes {
     GetPage(name: adminDashboard, page: () => const AdminDashboardScreen()),
     GetPage(name: userHome, page: () => const UserHomeScreen()),
     GetPage(name: adminLogin, page: () => const AdminLoginView()),
-    GetPage(name: addBook, page: () => const AddBookScreen()),
+    GetPage(
+      name: addBook,
+      page: () => const AddBookScreen(),
+      binding: BindingsBuilder(() {
+        Get.lazyPut<AddBookController>(() => AddBookController());
+      }),
+    ),
     GetPage(
       name: adminBookDetails,
       page: () => const AdminBookDetailsScreen(),

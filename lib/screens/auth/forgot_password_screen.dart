@@ -8,7 +8,7 @@ class ForgotPasswordScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.find<ForgotPasswordController>();
+    final controller = Get.put(ForgotPasswordController());
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -16,8 +16,11 @@ class ForgotPasswordScreen extends StatelessWidget {
         backgroundColor: AppColors.background,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded,
-              color: AppColors.textPrimary, size: 20),
+          icon: const Icon(
+            Icons.arrow_back_ios_new_rounded,
+            color: AppColors.textPrimary,
+            size: 20,
+          ),
           onPressed: () => Get.back(),
         ),
       ),
@@ -78,8 +81,10 @@ class ForgotPasswordScreen extends StatelessWidget {
                   keyboardType: TextInputType.emailAddress,
                   decoration: const InputDecoration(
                     hintText: 'Enter your email',
-                    prefixIcon: Icon(Icons.email_outlined,
-                        color: AppColors.textHint),
+                    prefixIcon: Icon(
+                      Icons.email_outlined,
+                      color: AppColors.textHint,
+                    ),
                   ),
                   validator: (val) {
                     if (val == null || val.isEmpty) return 'Email is required';
@@ -89,19 +94,23 @@ class ForgotPasswordScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 32),
 
-                Obx(() => ElevatedButton(
-                      onPressed: controller.isLoading.value
-                          ? null
-                          : controller.sendResetEmail,
-                      child: controller.isLoading.value
-                          ? const SizedBox(
-                              height: 20,
-                              width: 20,
-                              child: CircularProgressIndicator(
-                                  color: Colors.white, strokeWidth: 2),
-                            )
-                          : const Text('Send Reset Link'),
-                    )),
+                Obx(
+                  () => ElevatedButton(
+                    onPressed: controller.isLoading.value
+                        ? null
+                        : controller.sendResetEmail,
+                    child: controller.isLoading.value
+                        ? const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2,
+                            ),
+                          )
+                        : const Text('Send Reset Link'),
+                  ),
+                ),
                 const SizedBox(height: 16),
 
                 Center(

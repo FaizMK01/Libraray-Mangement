@@ -3,6 +3,8 @@ import 'package:get/get.dart';
 
 import '../../controllers/signup_controller.dart';
 import '../../utils/app_theme.dart';
+import '../../widgets/app_logo.dart';
+import '../../widgets/form_label.dart';
 
 class SignupScreen extends StatelessWidget {
   const SignupScreen({super.key});
@@ -33,26 +35,18 @@ class SignupScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Create Account',
-                  style: TextStyle(
-                    fontSize: 26,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary,
-                  ),
-                ),
+                const Center(child: AppLogo(size: 72)),
+                const SizedBox(height: 20),
+                const Text('Create Account', style: AppTextStyles.heading1),
                 const SizedBox(height: 6),
                 const Text(
                   'Fill in your details to get started',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: AppColors.textSecondary,
-                  ),
+                  style: AppTextStyles.subtitle,
                 ),
                 const SizedBox(height: 28),
 
                 // Name
-                _buildLabel('Full Name'),
+                const FormLabel('Full Name'),
                 const SizedBox(height: 6),
                 TextFormField(
                   controller: controller.nameController,
@@ -73,7 +67,7 @@ class SignupScreen extends StatelessWidget {
                 const SizedBox(height: 16),
 
                 // Email
-                _buildLabel('Email'),
+                const FormLabel('Email'),
                 const SizedBox(height: 6),
                 TextFormField(
                   controller: controller.emailController,
@@ -94,7 +88,7 @@ class SignupScreen extends StatelessWidget {
                 const SizedBox(height: 16),
 
                 // Student ID
-                _buildLabel('Student ID'),
+                const FormLabel('Student ID'),
                 const SizedBox(height: 6),
                 TextFormField(
                   controller: controller.studentIdController,
@@ -114,7 +108,7 @@ class SignupScreen extends StatelessWidget {
                 const SizedBox(height: 16),
 
                 // Password
-                _buildLabel('Password'),
+                const FormLabel('Password'),
                 const SizedBox(height: 6),
                 Obx(
                   () => TextFormField(
@@ -148,7 +142,7 @@ class SignupScreen extends StatelessWidget {
                 const SizedBox(height: 16),
 
                 // Confirm Password
-                _buildLabel('Confirm Password'),
+                const FormLabel('Confirm Password'),
                 const SizedBox(height: 6),
                 Obx(
                   () => TextFormField(
@@ -233,14 +227,4 @@ class SignupScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildLabel(String text) {
-    return Text(
-      text,
-      style: const TextStyle(
-        fontSize: 13,
-        fontWeight: FontWeight.w500,
-        color: AppColors.textPrimary,
-      ),
-    );
-  }
 }

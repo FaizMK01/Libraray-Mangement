@@ -2,124 +2,297 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../controllers/add_book_controller.dart';
+import '../../models/book_model.dart';
 import '../../models/google_book_model.dart';
 import '../../routes/app_routes.dart';
 import '../../utils/app_theme.dart';
+import '../../widgets/admin_logout_fab.dart';
 import '../../widgets/book_cover_widget.dart';
 
-class AddBookScreen extends StatelessWidget {
+class AddBookScreen extends GetView<AddBookController> {
   const AddBookScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(AddBookController());
-
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        backgroundColor: AppColors.background,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back_ios_new_rounded,
-            color: AppColors.textPrimary,
-            size: 20,
-          ),
-          onPressed: () => Get.back(),
-        ),
-        title: const Row(
-          children: [
-            Icon(Icons.menu_book_rounded, color: AppColors.primary, size: 22),
-            SizedBox(width: 8),
-            Text(
-              'Add Book',
-              style: TextStyle(
-                color: AppColors.textPrimary,
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-        ),
-      ),
+      floatingActionButton: const AdminLogoutFab(),
       body: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
-            child: TextField(
-              controller: controller.searchController,
-              decoration: InputDecoration(
-                hintText: 'Search book name...',
-                prefixIcon: const Icon(Icons.search, color: AppColors.textHint),
-                suffixIcon: Obx(
-                  () => controller.isSearching.value
-                      ? const Padding(
-                          padding: EdgeInsets.all(12),
-                          child: SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: AppColors.primary,
-                            ),
-                          ),
-                        )
-                      : IconButton(
-                          icon: const Icon(
-                            Icons.arrow_forward_rounded,
-                            color: AppColors.primary,
-                          ),
-                          onPressed: controller.searchBooks,
-                        ),
-                ),
-              ),
-              onSubmitted: (_) => controller.searchBooks(),
-            ),
-          ),
-          Expanded(
-            child: Obx(() {
-              if (controller.isSearching.value) {
-                return const Center(
-                  child: CircularProgressIndicator(color: AppColors.primary),
-                );
-              }
+          _SearchHeader(controller: controller),
+          Expanded(child: _BookContent(controller: controller)),
+        ],
+      ),
+    );
+  }
+}
 
-              if (!controller.hasSearched.value) {
-                return const Center(
-                  child: Text(
-                    'Search for books using Google Books API',
-                    style: TextStyle(color: AppColors.textSecondary),
-                  ),
-                );
-              }
+class _SearchHeader extends StatelessWidget {
+  final AddBookController controller;
 
-              if (controller.searchResults.isEmpty) {
-                return const Center(
-                  child: Text(
-                    'No books found. Try a different search.',
-                    style: TextStyle(color: AppColors.textSecondary),
-                  ),
-                );
-              }
+  const _SearchHeader({required this.controller});
 
-              return ListView(
-                padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: const BoxDecoration(
+        color: AppColors.primary,
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(28),
+          bottomRight: Radius.circular(28),
+        ),
+      ),
+      child: SafeArea(
+        bottom: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(8, 4, 20, 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
                 children: [
-                  const Text(
-                    'Results from Google Books:',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.textSecondary,
+                  IconButton(
+                    onPressed: () => Get.back(),
+                    icon: const Icon(
+                      Icons.arrow_back_ios_new_rounded,
+                      color: Colors.white,
+                      size: 20,
                     ),
                   ),
-                  const SizedBox(height: 12),
-                  ...controller.searchResults.map(
-                    (book) => _BookResultCard(book: book),
+                  const Expanded(
+                    child: Text(
+                      'Find a Book',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
                 ],
-              );
-            }),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 12),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Add to Library',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 22,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Browse your collection or search Google Books',
+                      style: TextStyle(
+                        color: Colors.white.withValues(alpha: 0.85),
+                        fontSize: 14,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            controller: controller.searchController,
+                            style: const TextStyle(fontSize: 14),
+                            textInputAction: TextInputAction.search,
+                            decoration: InputDecoration(
+                              hintText: 'Search by title or author...',
+                              filled: true,
+                              fillColor: AppColors.surface,
+                              prefixIcon: const Icon(
+                                Icons.search_rounded,
+                                color: AppColors.textHint,
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(14),
+                                borderSide: BorderSide.none,
+                              ),
+                            ),
+                            onSubmitted: (_) => controller.searchBooks(),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Obx(
+                          () => SizedBox(
+                            width: 48,
+                            height: 48,
+                            child: controller.isSearching.value
+                                ? const Padding(
+                                    padding: EdgeInsets.all(12),
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: Colors.white,
+                                    ),
+                                  )
+                                : Material(
+                                    color: AppColors.surface,
+                                    borderRadius: BorderRadius.circular(14),
+                                    child: InkWell(
+                                      onTap: controller.searchBooks,
+                                      borderRadius: BorderRadius.circular(14),
+                                      child: const Icon(
+                                        Icons.arrow_forward_rounded,
+                                        color: AppColors.primary,
+                                      ),
+                                    ),
+                                  ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _BookContent extends StatelessWidget {
+  final AddBookController controller;
+
+  const _BookContent({required this.controller});
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(() {
+      if (controller.isSearching.value) {
+        return const Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CircularProgressIndicator(color: AppColors.primary),
+              SizedBox(height: 16),
+              Text(
+                'Searching Google Books...',
+                style: TextStyle(color: AppColors.textSecondary),
+              ),
+            ],
+          ),
+        );
+      }
+
+      return ListView(
+        padding: const EdgeInsets.fromLTRB(20, 20, 20, 100),
+        children: [
+          if (controller.hasSearched.value) ...[
+            _SectionHeader(
+              title: 'Search Results',
+              subtitle: controller.searchResults.isEmpty
+                  ? 'No books found for your search'
+                  : '${controller.searchResults.length} book(s) found',
+            ),
+            const SizedBox(height: 12),
+            if (controller.searchResults.isEmpty)
+              const _EmptyState(
+                icon: Icons.search_off_rounded,
+                title: 'No results found',
+                message:
+                    'Try different keywords or check your internet connection.',
+              )
+            else
+              ...controller.searchResults.map(
+                (book) => Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: _GoogleBookCard(book: book),
+                ),
+              ),
+            const SizedBox(height: 24),
+          ],
+          _SectionHeader(
+            title: 'Books in Library',
+            subtitle: controller.isLoadingLibrary.value
+                ? 'Loading your collection...'
+                : 'Recently added books (up to 10)',
+          ),
+          const SizedBox(height: 12),
+          if (controller.isLoadingLibrary.value)
+            const Center(
+              child: Padding(
+                padding: EdgeInsets.all(32),
+                child: CircularProgressIndicator(color: AppColors.primary),
+              ),
+            )
+          else if (controller.libraryBooks.isEmpty)
+            const _EmptyState(
+              icon: Icons.library_books_outlined,
+              title: 'No books yet',
+              message:
+                  'Your library is empty. Search above to find and add books.',
+            )
+          else
+            ...controller.libraryBooks.map(
+              (book) => Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: _LibraryBookCard(book: book),
+              ),
+            ),
+        ],
+      );
+    });
+  }
+}
+
+class _SectionHeader extends StatelessWidget {
+  final String title;
+  final String subtitle;
+
+  const _SectionHeader({required this.title, required this.subtitle});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(title, style: AppTextStyles.sectionTitle),
+        const SizedBox(height: 4),
+        Text(subtitle, style: AppTextStyles.subtitle),
+      ],
+    );
+  }
+}
+
+class _EmptyState extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String message;
+
+  const _EmptyState({
+    required this.icon,
+    required this.title,
+    required this.message,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(28),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.border),
+      ),
+      child: Column(
+        children: [
+          Icon(icon, size: 40, color: AppColors.primary),
+          const SizedBox(height: 12),
+          Text(title, style: AppTextStyles.heading2.copyWith(fontSize: 16)),
+          const SizedBox(height: 6),
+          Text(
+            message,
+            textAlign: TextAlign.center,
+            style: AppTextStyles.subtitle,
           ),
         ],
       ),
@@ -127,89 +300,158 @@ class AddBookScreen extends StatelessWidget {
   }
 }
 
-class _BookResultCard extends StatelessWidget {
-  final GoogleBookModel book;
+class _LibraryBookCard extends StatelessWidget {
+  final BookModel book;
 
-  const _BookResultCard({required this.book});
+  const _LibraryBookCard({required this.book});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(color: AppColors.border),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
         children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              BookCoverWidget(
-                title: book.title,
-                imageUrl: book.coverImageUrl,
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      book.title,
-                      style: const TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textPrimary,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      book.author,
-                      style: const TextStyle(
-                        fontSize: 13,
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      book.description,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: AppColors.textHint,
-                        height: 1.4,
-                      ),
-                      maxLines: 3,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
+          BookCoverWidget(title: book.title, imageUrl: book.coverImageUrl),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  book.title,
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textPrimary,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
-              ),
-            ],
+                const SizedBox(height: 4),
+                Text(
+                  book.author,
+                  style: const TextStyle(
+                    fontSize: 13,
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+              ],
+            ),
           ),
-          const SizedBox(height: 12),
-          SizedBox(
-            width: double.infinity,
-            child: OutlinedButton.icon(
-              onPressed: () {
-                Get.toNamed(AppRoutes.adminBookDetails, arguments: book);
-              },
-              icon: const Icon(Icons.add, size: 18),
-              label: const Text('Select'),
-              style: OutlinedButton.styleFrom(
-                foregroundColor: AppColors.textPrimary,
-                side: const BorderSide(color: AppColors.border),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            decoration: BoxDecoration(
+              color: AppColors.successLight,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: const Text(
+              'Added',
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+                color: AppColors.success,
               ),
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _GoogleBookCard extends StatelessWidget {
+  final GoogleBookModel book;
+
+  const _GoogleBookCard({required this.book});
+
+  void _openDetails() {
+    Get.toNamed(AppRoutes.adminBookDetails, arguments: book);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: _openDetails,
+        borderRadius: BorderRadius.circular(16),
+        child: Ink(
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: AppColors.border),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(14),
+            child: Column(
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    BookCoverWidget(
+                      title: book.title,
+                      imageUrl: book.coverImageUrl,
+                    ),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            book.title,
+                            style: const TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            book.author,
+                            style: const TextStyle(
+                              fontSize: 13,
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            book.description,
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: AppColors.textHint,
+                              height: 1.4,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: _openDetails,
+                    icon: const Icon(Icons.add_rounded, size: 18),
+                    label: const Text('Add to Library'),
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: const Size(double.infinity, 44),
+                      elevation: 0,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }

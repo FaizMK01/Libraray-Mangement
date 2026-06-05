@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 
 import '../models/google_book_model.dart';
 import '../routes/app_routes.dart';
+import '../utils/app_snackbar.dart';
 
 class AdminBookDetailsController extends GetxController {
   final GoogleBookModel googleBook;
@@ -67,12 +68,9 @@ class AdminBookDetailsController extends GetxController {
         },
       );
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Failed to save book. Please try again.',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
+      AppSnackbar.error(
+        'Save Failed',
+        'Unable to save the book to the library. Please try again.',
       );
     } finally {
       isSaving.value = false;

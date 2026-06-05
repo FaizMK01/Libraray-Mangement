@@ -4,7 +4,9 @@ import 'package:get/get.dart';
 import '../../controllers/admin_book_details_controller.dart';
 import '../../models/google_book_model.dart';
 import '../../utils/app_theme.dart';
+import '../../widgets/admin_logout_fab.dart';
 import '../../widgets/book_cover_widget.dart';
+import '../../widgets/form_label.dart';
 
 class AdminBookDetailsScreen extends StatelessWidget {
   const AdminBookDetailsScreen({super.key});
@@ -21,34 +23,22 @@ class AdminBookDetailsScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: AppColors.background,
+      floatingActionButton: const AdminLogoutFab(),
       appBar: AppBar(
-        backgroundColor: AppColors.background,
+        backgroundColor: AppColors.surface,
+        foregroundColor: AppColors.textPrimary,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back_ios_new_rounded,
-            color: AppColors.textPrimary,
-            size: 20,
-          ),
+          icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
           onPressed: () => Get.back(),
         ),
-        title: const Row(
-          children: [
-            Icon(Icons.edit_outlined, color: AppColors.primary, size: 22),
-            SizedBox(width: 8),
-            Text(
-              'Book Details',
-              style: TextStyle(
-                color: AppColors.textPrimary,
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
+        title: const Text(
+          'Book Details',
+          style: TextStyle(fontWeight: FontWeight.w600),
         ),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.fromLTRB(20, 20, 20, 100),
         child: Form(
           key: controller.formKey,
           child: Column(
@@ -67,7 +57,7 @@ class AdminBookDetailsScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 24),
-              _buildLabel('Title'),
+              const FormLabel('Title'),
               const SizedBox(height: 6),
               TextFormField(
                 controller: controller.titleController,
@@ -75,7 +65,7 @@ class AdminBookDetailsScreen extends StatelessWidget {
                     v == null || v.isEmpty ? 'Title is required' : null,
               ),
               const SizedBox(height: 16),
-              _buildLabel('Author'),
+              const FormLabel('Author'),
               const SizedBox(height: 6),
               TextFormField(
                 controller: controller.authorController,
@@ -83,7 +73,7 @@ class AdminBookDetailsScreen extends StatelessWidget {
                     v == null || v.isEmpty ? 'Author is required' : null,
               ),
               const SizedBox(height: 16),
-              _buildLabel('Description'),
+              const FormLabel('Description'),
               const SizedBox(height: 6),
               TextFormField(
                 controller: controller.descriptionController,
@@ -92,7 +82,7 @@ class AdminBookDetailsScreen extends StatelessWidget {
                     v == null || v.isEmpty ? 'Description is required' : null,
               ),
               const SizedBox(height: 16),
-              _buildLabel('Cover Image'),
+              const FormLabel('Cover Image'),
               const SizedBox(height: 6),
               Container(
                 width: double.infinity,
@@ -117,7 +107,7 @@ class AdminBookDetailsScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16),
-              _buildLabel('Quantity (copies)'),
+              const FormLabel('Quantity (copies)'),
               const SizedBox(height: 6),
               TextFormField(
                 controller: controller.quantityController,
@@ -154,14 +144,4 @@ class AdminBookDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildLabel(String text) {
-    return Text(
-      text,
-      style: const TextStyle(
-        fontSize: 13,
-        fontWeight: FontWeight.w500,
-        color: AppColors.textPrimary,
-      ),
-    );
-  }
 }

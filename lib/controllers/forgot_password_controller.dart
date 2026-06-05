@@ -1,6 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+
+import '../utils/app_snackbar.dart';
 
 class ForgotPasswordController extends GetxController {
   final emailController = TextEditingController();
@@ -16,34 +18,20 @@ class ForgotPasswordController extends GetxController {
         email: emailController.text.trim(),
       );
 
-      Get.snackbar(
+      AppSnackbar.success(
         'Email Sent',
-        'Password reset link sent to ${emailController.text.trim()}',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: const Color(0xFFEAF3DE),
-        colorText: const Color(0xFF27500A),
-        margin: const EdgeInsets.all(16),
-        borderRadius: 12,
-        duration: const Duration(seconds: 4),
+        'A password reset link has been sent to ${emailController.text.trim()}.',
       );
 
       Get.back();
     } on FirebaseAuthException catch (e) {
-      String message = 'Failed to send reset email.';
+      String message = 'Failed to send reset email. Please try again.';
       if (e.code == 'user-not-found') {
-        message = 'No account found with this email.';
+        message = 'No account found with this email address.';
       } else if (e.code == 'invalid-email') {
-        message = 'Invalid email address.';
+        message = 'Please enter a valid email address.';
       }
-      Get.snackbar(
-        'Error',
-        message,
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: const Color(0xFFFCEBEB),
-        colorText: const Color(0xFFA32D2D),
-        margin: const EdgeInsets.all(16),
-        borderRadius: 12,
-      );
+      AppSnackbar.error('Request Failed', message);
     } finally {
       isLoading.value = false;
     }

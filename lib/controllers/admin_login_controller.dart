@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
 import '../routes/app_routes.dart';
+import '../utils/app_snackbar.dart';
 
 class AdminLoginController extends GetxController {
   final formKey = GlobalKey<FormState>();
@@ -15,8 +16,6 @@ class AdminLoginController extends GetxController {
   static const _adminEmail = 'admin@gmail.com';
   static const _adminPassword = 'admin12345';
 
-  // final _box = GetStorage();
-
   void togglePassword() => isPasswordHidden.value = !isPasswordHidden.value;
 
   void login() {
@@ -28,24 +27,17 @@ class AdminLoginController extends GetxController {
     final password = passwordController.text.trim();
 
     if (email == _adminEmail && password == _adminPassword) {
-      GetStorage().write('isAdminLoggedIn', true); // direct likho
-      print('Saved: ${GetStorage().read('isAdminLoggedIn')}'); // check karo
+      GetStorage().write('isAdminLoggedIn', true);
 
-      Get.snackbar(
-        'Welcome Admin',
-        'Login successful',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green,
-        colorText: Colors.white,
+      AppSnackbar.success(
+        'Welcome Back',
+        'You have successfully logged in as admin.',
       );
       Get.offAllNamed(AppRoutes.adminDashboard);
     } else {
-      Get.snackbar(
-        'Error',
-        'Incorrect Credentials',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
+      AppSnackbar.error(
+        'Login Failed',
+        'Invalid email or password. Please try again.',
       );
     }
 
@@ -55,7 +47,7 @@ class AdminLoginController extends GetxController {
   Future<void> logout() async {
     final box = GetStorage();
     box.write('isAdminLoggedIn', false);
-    await box.save(); // force save karo disk pe
+    await box.save();
     Get.offAllNamed(AppRoutes.login);
   }
 
