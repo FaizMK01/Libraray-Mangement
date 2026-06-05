@@ -42,7 +42,7 @@ class AdminLoginController extends GetxController {
     } else {
       Get.snackbar(
         'Error',
-        'Email ya password galat hai',
+        'Incorrect Credentials',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red,
         colorText: Colors.white,

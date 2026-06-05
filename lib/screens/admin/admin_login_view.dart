@@ -96,8 +96,9 @@ class AdminLoginView extends StatelessWidget {
                         ),
                       ),
                       validator: (val) {
-                        if (val == null || val.isEmpty)
+                        if (val == null || val.isEmpty) {
                           return 'Password required';
+                        }
                         return null;
                       },
                     ),

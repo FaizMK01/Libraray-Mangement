@@ -178,7 +178,7 @@ class LoginScreen extends StatelessWidget {
 
               OutlinedButton.icon(
                 onPressed: () {
-                  Get.toNamed(AppRoutes.adminLoginView);
+                  Get.toNamed(AppRoutes.adminLogin);
                 },
                 icon: const Icon(
                   Icons.shield_outlined,
