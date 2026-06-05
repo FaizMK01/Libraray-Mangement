@@ -1,87 +1,77 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import '../models/user_model.dart';
+
 import '../routes/app_routes.dart';
 
 class SignupController extends GetxController {
+  final formKey = GlobalKey<FormState>();
+
   final nameController = TextEditingController();
   final emailController = TextEditingController();
   final studentIdController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
-  final formKey = GlobalKey<FormState>();
 
   final isLoading = false.obs;
   final isPasswordVisible = false.obs;
   final isConfirmPasswordVisible = false.obs;
 
-  void togglePasswordVisibility() {
-    isPasswordVisible.value = !isPasswordVisible.value;
-  }
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  void toggleConfirmPasswordVisibility() {
-    isConfirmPasswordVisible.value = !isConfirmPasswordVisible.value;
-  }
+  void togglePasswordVisibility() =>
+      isPasswordVisible.value = !isPasswordVisible.value;
+
+  void toggleConfirmPasswordVisibility() =>
+      isConfirmPasswordVisible.value = !isConfirmPasswordVisible.value;
 
   Future<void> signup() async {
     if (!formKey.currentState!.validate()) return;
 
     isLoading.value = true;
+
     try {
-      // Create Firebase Auth user
-      final credential = await FirebaseAuth.instance
+      final UserCredential credential = await _auth
           .createUserWithEmailAndPassword(
-        email: emailController.text.trim(),
-        password: passwordController.text.trim(),
+            email: emailController.text.trim(),
+            password: passwordController.text.trim(),
+          );
+
+      await _firestore.collection('users').doc(credential.user!.uid).set({
+        'uid': credential.user!.uid,
+        'name': nameController.text.trim(),
+        'email': emailController.text.trim(),
+        'studentId': studentIdController.text.trim(),
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+
+      Get.snackbar(
+        'Account Created!',
+        'Welcome, ${nameController.text.trim()}',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+        duration: const Duration(seconds: 3),
       );
 
-      if (credential.user != null) {
-        // Save user data to Firestore
-        final userModel = UserModel(
-          uid: credential.user!.uid,
-          name: nameController.text.trim(),
-          email: emailController.text.trim(),
-          studentId: studentIdController.text.trim(),
-          role: 'user',
-          createdAt: DateTime.now(),
-        );
-
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc(credential.user!.uid)
-            .set(userModel.toMap());
-
-        Get.snackbar(
-          'Success',
-          'Account created successfully!',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: const Color(0xFFEAF3DE),
-          colorText: const Color(0xFF27500A),
-          margin: const EdgeInsets.all(16),
-          borderRadius: 12,
-        );
-
-        Get.offAllNamed(AppRoutes.userHome);
-      }
+      Get.offAllNamed(AppRoutes.userHome);
     } on FirebaseAuthException catch (e) {
-      String message = 'Signup failed. Please try again.';
+      String message = 'Error occurred';
       if (e.code == 'email-already-in-use') {
-        message = 'This email is already registered.';
+        message = 'Email already in use';
       } else if (e.code == 'weak-password') {
-        message = 'Password must be at least 6 characters.';
+        message = 'Password should be at least 6 characters';
       } else if (e.code == 'invalid-email') {
-        message = 'Invalid email address.';
+        message = 'Invalid Email';
       }
       Get.snackbar(
-        'Signup Failed',
+        'Error',
         message,
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: const Color(0xFFFCEBEB),
-        colorText: const Color(0xFFA32D2D),
-        margin: const EdgeInsets.all(16),
-        borderRadius: 12,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
       );
     } finally {
       isLoading.value = false;

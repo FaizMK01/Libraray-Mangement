@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
 import '../../controllers/signup_controller.dart';
 import '../../utils/app_theme.dart';
 
@@ -8,7 +9,7 @@ class SignupScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.find<SignupController>();
+    final controller = Get.put(SignupController());
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -16,8 +17,11 @@ class SignupScreen extends StatelessWidget {
         backgroundColor: AppColors.background,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded,
-              color: AppColors.textPrimary, size: 20),
+          icon: const Icon(
+            Icons.arrow_back_ios_new_rounded,
+            color: AppColors.textPrimary,
+            size: 20,
+          ),
           onPressed: () => Get.back(),
         ),
       ),
@@ -41,7 +45,9 @@ class SignupScreen extends StatelessWidget {
                 const Text(
                   'Fill in your details to get started',
                   style: TextStyle(
-                      fontSize: 14, color: AppColors.textSecondary),
+                    fontSize: 14,
+                    color: AppColors.textSecondary,
+                  ),
                 ),
                 const SizedBox(height: 28),
 
@@ -53,8 +59,10 @@ class SignupScreen extends StatelessWidget {
                   textCapitalization: TextCapitalization.words,
                   decoration: const InputDecoration(
                     hintText: 'Enter your full name',
-                    prefixIcon: Icon(Icons.person_outline,
-                        color: AppColors.textHint),
+                    prefixIcon: Icon(
+                      Icons.person_outline,
+                      color: AppColors.textHint,
+                    ),
                   ),
                   validator: (val) {
                     if (val == null || val.isEmpty) return 'Name is required';
@@ -72,8 +80,10 @@ class SignupScreen extends StatelessWidget {
                   keyboardType: TextInputType.emailAddress,
                   decoration: const InputDecoration(
                     hintText: 'Enter your email',
-                    prefixIcon: Icon(Icons.email_outlined,
-                        color: AppColors.textHint),
+                    prefixIcon: Icon(
+                      Icons.email_outlined,
+                      color: AppColors.textHint,
+                    ),
                   ),
                   validator: (val) {
                     if (val == null || val.isEmpty) return 'Email is required';
@@ -90,8 +100,10 @@ class SignupScreen extends StatelessWidget {
                   controller: controller.studentIdController,
                   decoration: const InputDecoration(
                     hintText: 'e.g. 2021-CS-45',
-                    prefixIcon: Icon(Icons.badge_outlined,
-                        color: AppColors.textHint),
+                    prefixIcon: Icon(
+                      Icons.badge_outlined,
+                      color: AppColors.textHint,
+                    ),
                   ),
                   validator: (val) {
                     if (val == null || val.isEmpty)
@@ -104,79 +116,89 @@ class SignupScreen extends StatelessWidget {
                 // Password
                 _buildLabel('Password'),
                 const SizedBox(height: 6),
-                Obx(() => TextFormField(
-                      controller: controller.passwordController,
-                      obscureText: !controller.isPasswordVisible.value,
-                      decoration: InputDecoration(
-                        hintText: 'Min 6 characters',
-                        prefixIcon: const Icon(Icons.lock_outline,
-                            color: AppColors.textHint),
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            controller.isPasswordVisible.value
-                                ? Icons.visibility_off_outlined
-                                : Icons.visibility_outlined,
-                            color: AppColors.textHint,
-                          ),
-                          onPressed: controller.togglePasswordVisibility,
-                        ),
+                Obx(
+                  () => TextFormField(
+                    controller: controller.passwordController,
+                    obscureText: !controller.isPasswordVisible.value,
+                    decoration: InputDecoration(
+                      hintText: 'Min 6 characters',
+                      prefixIcon: const Icon(
+                        Icons.lock_outline,
+                        color: AppColors.textHint,
                       ),
-                      validator: (val) {
-                        if (val == null || val.isEmpty)
-                          return 'Password is required';
-                        if (val.length < 6)
-                          return 'Minimum 6 characters required';
-                        return null;
-                      },
-                    )),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          controller.isPasswordVisible.value
+                              ? Icons.visibility_off_outlined
+                              : Icons.visibility_outlined,
+                          color: AppColors.textHint,
+                        ),
+                        onPressed: controller.togglePasswordVisibility,
+                      ),
+                    ),
+                    validator: (val) {
+                      if (val == null || val.isEmpty)
+                        return 'Password is required';
+                      if (val.length < 6)
+                        return 'Minimum 6 characters required';
+                      return null;
+                    },
+                  ),
+                ),
                 const SizedBox(height: 16),
 
                 // Confirm Password
                 _buildLabel('Confirm Password'),
                 const SizedBox(height: 6),
-                Obx(() => TextFormField(
-                      controller: controller.confirmPasswordController,
-                      obscureText:
-                          !controller.isConfirmPasswordVisible.value,
-                      decoration: InputDecoration(
-                        hintText: 'Re-enter your password',
-                        prefixIcon: const Icon(Icons.lock_outline,
-                            color: AppColors.textHint),
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            controller.isConfirmPasswordVisible.value
-                                ? Icons.visibility_off_outlined
-                                : Icons.visibility_outlined,
-                            color: AppColors.textHint,
-                          ),
-                          onPressed:
-                              controller.toggleConfirmPasswordVisibility,
-                        ),
+                Obx(
+                  () => TextFormField(
+                    controller: controller.confirmPasswordController,
+                    obscureText: !controller.isConfirmPasswordVisible.value,
+                    decoration: InputDecoration(
+                      hintText: 'Re-enter your password',
+                      prefixIcon: const Icon(
+                        Icons.lock_outline,
+                        color: AppColors.textHint,
                       ),
-                      validator: (val) {
-                        if (val == null || val.isEmpty)
-                          return 'Please confirm your password';
-                        if (val != controller.passwordController.text)
-                          return 'Passwords do not match';
-                        return null;
-                      },
-                    )),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          controller.isConfirmPasswordVisible.value
+                              ? Icons.visibility_off_outlined
+                              : Icons.visibility_outlined,
+                          color: AppColors.textHint,
+                        ),
+                        onPressed: controller.toggleConfirmPasswordVisibility,
+                      ),
+                    ),
+                    validator: (val) {
+                      if (val == null || val.isEmpty)
+                        return 'Please confirm your password';
+                      if (val != controller.passwordController.text)
+                        return 'Passwords do not match';
+                      return null;
+                    },
+                  ),
+                ),
                 const SizedBox(height: 32),
 
                 // Signup button
-                Obx(() => ElevatedButton(
-                      onPressed: controller.isLoading.value
-                          ? null
-                          : controller.signup,
-                      child: controller.isLoading.value
-                          ? const SizedBox(
-                              height: 20,
-                              width: 20,
-                              child: CircularProgressIndicator(
-                                  color: Colors.white, strokeWidth: 2),
-                            )
-                          : const Text('Create Account'),
-                    )),
+                Obx(
+                  () => ElevatedButton(
+                    onPressed: controller.isLoading.value
+                        ? null
+                        : controller.signup,
+                    child: controller.isLoading.value
+                        ? const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2,
+                            ),
+                          )
+                        : const Text('Create Account'),
+                  ),
+                ),
                 const SizedBox(height: 20),
 
                 Center(
@@ -186,7 +208,9 @@ class SignupScreen extends StatelessWidget {
                       text: const TextSpan(
                         text: 'Already have an account? ',
                         style: TextStyle(
-                            color: AppColors.textSecondary, fontSize: 14),
+                          color: AppColors.textSecondary,
+                          fontSize: 14,
+                        ),
                         children: [
                           TextSpan(
                             text: 'Login',
