@@ -9,7 +9,7 @@ import 'utils/app_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await GetStorage.init(); // sabse pehle
+  await GetStorage.init();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(const MyApp());
 }
