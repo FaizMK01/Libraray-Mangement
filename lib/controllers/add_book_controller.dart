@@ -3,18 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../models/book_model.dart';
-import '../models/google_book_model.dart';
-import '../services/google_books_service.dart';
+import '../models/gutenberg_book_model.dart';
+import '../services/gutenberg_service.dart';
 import '../utils/app_snackbar.dart';
 import '../utils/network_helper.dart';
 
 class AddBookController extends GetxController {
   final searchController = TextEditingController();
-  final GoogleBooksService _booksService = GoogleBooksService();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   final libraryBooks = <BookModel>[].obs;
-  final searchResults = <GoogleBookModel>[].obs;
+  final searchResultsGutenberg = <GutenbergBookModel>[].obs;
   final isSearching = false.obs;
   final isLoadingLibrary = true.obs;
   final hasSearched = false.obs;
@@ -35,19 +34,19 @@ class AddBookController extends GetxController {
         .limit(_libraryLimit)
         .snapshots()
         .listen((snapshot) {
-      libraryBooks.assignAll(
-        snapshot.docs
-            .map((doc) => BookModel.fromFirestore(doc.data(), doc.id))
-            .toList(),
-      );
-      isLoadingLibrary.value = false;
-    });
+          libraryBooks.assignAll(
+            snapshot.docs
+                .map((doc) => BookModel.fromFirestore(doc.data(), doc.id))
+                .toList(),
+          );
+          isLoadingLibrary.value = false;
+        });
   }
 
   void _onSearchChanged() {
     if (searchController.text.trim().isEmpty && hasSearched.value) {
       hasSearched.value = false;
-      searchResults.clear();
+      searchResultsGutenberg.clear();
     }
   }
 
@@ -73,8 +72,8 @@ class AddBookController extends GetxController {
     hasSearched.value = true;
 
     try {
-      final results = await _booksService.searchBooks(query);
-      searchResults.assignAll(results);
+      final results = await GutenbergService.searchBooks(query);
+      searchResultsGutenberg.assignAll(results);
 
       if (results.isEmpty) {
         AppSnackbar.info(

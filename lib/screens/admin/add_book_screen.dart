@@ -3,8 +3,7 @@ import 'package:get/get.dart';
 
 import '../../controllers/add_book_controller.dart';
 import '../../models/book_model.dart';
-import '../../models/google_book_model.dart';
-import '../../routes/app_routes.dart';
+import '../../models/gutenberg_book_model.dart';
 import '../../utils/app_theme.dart';
 import '../../widgets/admin_logout_fab.dart';
 import '../../widgets/book_cover_widget.dart';
@@ -88,13 +87,13 @@ class _SearchHeader extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Browse your collection or search Google Books',
+                      'Browse your collection or search for books',
                       style: TextStyle(
                         color: Colors.white.withValues(alpha: 0.85),
                         fontSize: 14,
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 12),
                     Row(
                       children: [
                         Expanded(
@@ -174,7 +173,7 @@ class _BookContent extends StatelessWidget {
               CircularProgressIndicator(color: AppColors.primary),
               SizedBox(height: 16),
               Text(
-                'Searching Google Books...',
+                'Searching Gutenberg...',
                 style: TextStyle(color: AppColors.textSecondary),
               ),
             ],
@@ -186,27 +185,23 @@ class _BookContent extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(20, 20, 20, 100),
         children: [
           if (controller.hasSearched.value) ...[
-            _SectionHeader(
-              title: 'Search Results',
-              subtitle: controller.searchResults.isEmpty
-                  ? 'No books found for your search'
-                  : '${controller.searchResults.length} book(s) found',
+            Obx(
+              () => _SectionHeader(
+                title: 'Search Results',
+                subtitle: _getResultsCount(controller),
+              ),
             ),
             const SizedBox(height: 12),
-            if (controller.searchResults.isEmpty)
-              const _EmptyState(
-                icon: Icons.search_off_rounded,
-                title: 'No results found',
-                message:
-                    'Try different keywords or check your internet connection.',
-              )
-            else
-              ...controller.searchResults.map(
-                (book) => Padding(
-                  padding: const EdgeInsets.only(bottom: 10),
-                  child: _GoogleBookCard(book: book),
-                ),
-              ),
+            Obx(
+              () => _hasNoResults(controller)
+                  ? const _EmptyState(
+                      icon: Icons.search_off_rounded,
+                      title: 'No results found',
+                      message:
+                          'Try different keywords or check your internet connection.',
+                    )
+                  : Column(children: _buildSearchResults(controller)),
+            ),
             const SizedBox(height: 24),
           ],
           _SectionHeader(
@@ -240,6 +235,27 @@ class _BookContent extends StatelessWidget {
         ],
       );
     });
+  }
+
+  String _getResultsCount(AddBookController controller) {
+    return controller.searchResultsGutenberg.isEmpty
+        ? 'No books found for your search'
+        : '${controller.searchResultsGutenberg.length} book(s) found';
+  }
+
+  bool _hasNoResults(AddBookController controller) {
+    return controller.searchResultsGutenberg.isEmpty;
+  }
+
+  List<Widget> _buildSearchResults(AddBookController controller) {
+    return controller.searchResultsGutenberg
+        .map(
+          (book) => Padding(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: _GutenbergBookCard(book: book),
+          ),
+        )
+        .toList();
   }
 }
 
@@ -364,13 +380,13 @@ class _LibraryBookCard extends StatelessWidget {
   }
 }
 
-class _GoogleBookCard extends StatelessWidget {
-  final GoogleBookModel book;
+class _GutenbergBookCard extends StatelessWidget {
+  final GutenbergBookModel book;
 
-  const _GoogleBookCard({required this.book});
+  const _GutenbergBookCard({required this.book});
 
   void _openDetails() {
-    Get.toNamed(AppRoutes.adminBookDetails, arguments: book);
+    Get.toNamed('/gutenberg-book-details', arguments: book);
   }
 
   @override
@@ -436,6 +452,25 @@ class _GoogleBookCard extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 12),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 5,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColors.successLight,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: const Text(
+                    'Free Public Domain',
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.success,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton.icon(
@@ -456,3 +491,4 @@ class _GoogleBookCard extends StatelessWidget {
     );
   }
 }
+

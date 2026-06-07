@@ -9,6 +9,8 @@ class AdminDashboardController extends GetxController {
   final approvedRequests = 0.obs;
   final totalMembers = 0.obs;
   final isLoading = true.obs;
+  // Used by the dashboard screen to show error state + retry button
+  final hasError = false.obs;
 
   @override
   void onInit() {
@@ -18,22 +20,28 @@ class AdminDashboardController extends GetxController {
 
   Future<void> _loadStats() async {
     isLoading.value = true;
+    hasError.value = false;
     try {
-      final booksSnap = await _firestore.collection('books').get();
-      final pendingSnap = await _firestore
-          .collection('requests')
-          .where('status', isEqualTo: 'pending')
-          .get();
-      final approvedSnap = await _firestore
-          .collection('requests')
-          .where('status', isEqualTo: 'approved')
-          .get();
-      final membersSnap = await _firestore.collection('users').get();
+      final results = await Future.wait([
+        _firestore.collection('books').get(),
+        _firestore
+            .collection('requests')
+            .where('status', isEqualTo: 'pending')
+            .get(),
+        _firestore
+            .collection('requests')
+            .where('status', isEqualTo: 'approved')
+            .get(),
+        _firestore.collection('users').get(),
+      ]);
 
-      totalBooks.value = booksSnap.docs.length;
-      pendingRequests.value = pendingSnap.docs.length;
-      approvedRequests.value = approvedSnap.docs.length;
-      totalMembers.value = membersSnap.docs.length;
+      totalBooks.value = results[0].docs.length;
+      pendingRequests.value = results[1].docs.length;
+      approvedRequests.value = results[2].docs.length;
+      totalMembers.value = results[3].docs.length;
+    } catch (_) {
+      // Show error state in UI — user can tap Retry
+      hasError.value = true;
     } finally {
       isLoading.value = false;
     }

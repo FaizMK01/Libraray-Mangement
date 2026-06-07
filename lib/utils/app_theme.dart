@@ -60,108 +60,129 @@ class AppTextStyles {
 
 class AppTheme {
   static ThemeData get theme => ThemeData(
-        useMaterial3: true,
-        primaryColor: AppColors.primary,
-        scaffoldBackgroundColor: AppColors.background,
-        colorScheme: const ColorScheme.light(
-          primary: AppColors.primary,
-          onPrimary: Colors.white,
-          secondary: AppColors.primaryDark,
-          error: AppColors.error,
-          surface: AppColors.surface,
-          onSurface: AppColors.textPrimary,
-        ),
-        appBarTheme: const AppBarTheme(
-          backgroundColor: AppColors.primary,
-          foregroundColor: Colors.white,
-          elevation: 0,
-          centerTitle: false,
-          systemOverlayStyle: SystemUiOverlayStyle.light,
-          titleTextStyle: TextStyle(
-            color: Colors.white,
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        cardTheme: CardThemeData(
-          color: AppColors.surface,
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-            side: const BorderSide(color: AppColors.border),
-          ),
-        ),
-        inputDecorationTheme: InputDecorationTheme(
-          filled: true,
-          fillColor: AppColors.surface,
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: AppColors.border),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: AppColors.border),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide:
-                const BorderSide(color: AppColors.primary, width: 1.5),
-          ),
-          errorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: AppColors.error),
-          ),
-          focusedErrorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: AppColors.error, width: 1.5),
-          ),
-          hintStyle: const TextStyle(color: AppColors.textHint, fontSize: 14),
-          errorStyle: const TextStyle(color: AppColors.error, fontSize: 12),
-        ),
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.primary,
-            foregroundColor: Colors.white,
-            elevation: 0,
-            minimumSize: const Size(double.infinity, 52),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            textStyle: const TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ),
-        outlinedButtonTheme: OutlinedButtonThemeData(
-          style: OutlinedButton.styleFrom(
-            minimumSize: const Size(double.infinity, 52),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            side: const BorderSide(color: AppColors.border),
-            textStyle: const TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ),
-        floatingActionButtonTheme: const FloatingActionButtonThemeData(
-          backgroundColor: AppColors.error,
-          foregroundColor: Colors.white,
-          elevation: 4,
-        ),
-        snackBarTheme: SnackBarThemeData(
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-        ),
-        dividerTheme: const DividerThemeData(
-          color: AppColors.border,
-          thickness: 1,
-        ),
-      );
+    useMaterial3: true,
+    primaryColor: AppColors.primary,
+    scaffoldBackgroundColor: AppColors.background,
+    colorScheme: const ColorScheme.light(
+      primary: AppColors.primary,
+      onPrimary: Colors.white,
+      secondary: AppColors.primaryDark,
+      error: AppColors.error,
+      surface: AppColors.surface,
+      onSurface: AppColors.textPrimary,
+    ),
+
+    // ── AppBar ──────────────────────────────────────────────────────────
+    // Default: white surface with dark text — each screen that wants a
+    // coloured AppBar sets backgroundColor explicitly on its own AppBar.
+    // Admin screens: pass backgroundColor: AppColors.primary on their AppBar.
+    // Auth screens / custom-header screens: omit AppBar entirely.
+    appBarTheme: const AppBarTheme(
+      backgroundColor: AppColors.surface,
+      foregroundColor: AppColors.textPrimary,
+      elevation: 0,
+      scrolledUnderElevation: 0,
+      centerTitle: false,
+      systemOverlayStyle: SystemUiOverlayStyle.dark,
+      iconTheme: IconThemeData(color: AppColors.textPrimary),
+      titleTextStyle: TextStyle(
+        color: AppColors.textPrimary,
+        fontSize: 18,
+        fontWeight: FontWeight.w600,
+      ),
+      // Bottom border to visually separate from content
+      shadowColor: AppColors.border,
+      surfaceTintColor: Colors.transparent,
+    ),
+
+    cardTheme: CardThemeData(
+      color: AppColors.surface,
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: const BorderSide(color: AppColors.border),
+      ),
+    ),
+    inputDecorationTheme: InputDecorationTheme(
+      filled: true,
+      fillColor: AppColors.surface,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: AppColors.border),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: AppColors.border),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+      ),
+      errorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: AppColors.error),
+      ),
+      focusedErrorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: AppColors.error, width: 1.5),
+      ),
+      hintStyle: const TextStyle(color: AppColors.textHint, fontSize: 14),
+      errorStyle: const TextStyle(color: AppColors.error, fontSize: 12),
+    ),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: AppColors.primary,
+        foregroundColor: Colors.white,
+        elevation: 0,
+        minimumSize: const Size(double.infinity, 52),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+      ),
+    ),
+    outlinedButtonTheme: OutlinedButtonThemeData(
+      style: OutlinedButton.styleFrom(
+        minimumSize: const Size(double.infinity, 52),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        side: const BorderSide(color: AppColors.border),
+        textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+      ),
+    ),
+    floatingActionButtonTheme: const FloatingActionButtonThemeData(
+      backgroundColor: AppColors.error,
+      foregroundColor: Colors.white,
+      elevation: 4,
+    ),
+    snackBarTheme: SnackBarThemeData(
+      behavior: SnackBarBehavior.floating,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    ),
+    dividerTheme: const DividerThemeData(color: AppColors.border, thickness: 1),
+  );
+}
+
+// Helper: use this on screens that want the primary-coloured AppBar
+// e.g.  appBar: adminAppBar('Requests')
+AppBar adminAppBar(
+  String title, {
+  List<Widget>? actions,
+  bool showBack = true,
+}) {
+  return AppBar(
+    backgroundColor: AppColors.primary,
+    foregroundColor: Colors.white,
+    elevation: 0,
+    systemOverlayStyle: SystemUiOverlayStyle.light,
+    title: Text(
+      title,
+      style: const TextStyle(
+        color: Colors.white,
+        fontSize: 18,
+        fontWeight: FontWeight.w600,
+      ),
+    ),
+    iconTheme: const IconThemeData(color: Colors.white),
+    automaticallyImplyLeading: showBack,
+    actions: actions,
+  );
 }

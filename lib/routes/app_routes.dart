@@ -1,11 +1,12 @@
 import 'package:get/get.dart';
 import 'package:library_mangement/screens/admin/admin_login_view.dart';
+import 'package:library_mangement/screens/user/in_app_book_reader_screen.dart';
 
 import '../controllers/add_book_controller.dart';
 import '../screens/admin/add_book_screen.dart';
-import '../screens/admin/admin_book_details_screen.dart';
 import '../screens/admin/admin_dashboard_screen.dart';
 import '../screens/admin/book_saved_screen.dart';
+import '../screens/admin/gutenberg_book_details_screen.dart';
 import '../screens/admin/user_requests_screen.dart';
 import '../screens/auth/forgot_password_screen.dart';
 import '../screens/auth/login_screen.dart';
@@ -24,11 +25,12 @@ class AppRoutes {
   static const userHome = '/user-home';
   static const adminLogin = '/admin-login';
   static const addBook = '/add-book';
-  static const adminBookDetails = '/admin-book-details';
+  static const gutenbergBookDetails = '/gutenberg-book-details';
   static const bookSaved = '/book-saved';
   static const userRequests = '/user-requests';
   static const libraryDetails = '/library-details';
   static const bookRequest = '/book-request';
+  static const bookReader = '/book-reader';
 
   static final pages = [
     GetPage(name: splash, page: () => const SplashScreen()),
@@ -46,12 +48,16 @@ class AppRoutes {
       }),
     ),
     GetPage(
-      name: adminBookDetails,
-      page: () => const AdminBookDetailsScreen(),
+      name: AppRoutes.gutenbergBookDetails,
+      page: () => const GutenbergBookDetailsScreen(),
     ),
     GetPage(name: bookSaved, page: () => const BookSavedScreen()),
     GetPage(name: userRequests, page: () => const UserRequestsScreen()),
     GetPage(name: libraryDetails, page: () => const LibraryDetailsScreen()),
     GetPage(name: bookRequest, page: () => const BookRequestScreen()),
+    GetPage(
+      name: AppRoutes.bookReader,
+      page: () => const InAppBookReaderScreen(),
+    ),
   ];
 }

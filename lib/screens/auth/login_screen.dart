@@ -7,6 +7,7 @@ import '../../utils/app_theme.dart';
 import '../../widgets/app_logo.dart';
 import '../../widgets/form_label.dart';
 
+// Login screen — no AppBar; fully custom layout
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
 
@@ -104,8 +105,9 @@ class LoginScreen extends StatelessWidget {
                 const SizedBox(height: 20),
                 Obx(
                   () => ElevatedButton(
-                    onPressed:
-                        controller.isLoading.value ? null : controller.login,
+                    onPressed: controller.isLoading.value
+                        ? null
+                        : controller.login,
                     child: controller.isLoading.value
                         ? const SizedBox(
                             height: 20,
