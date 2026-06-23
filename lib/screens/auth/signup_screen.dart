@@ -14,27 +14,37 @@ class SignupScreen extends StatelessWidget {
     final controller = Get.put(SignupController());
 
     return Scaffold(
+      // No AppBar — back button is inline in the scrollable body
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        backgroundColor: AppColors.background,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back_ios_new_rounded,
-            color: AppColors.textPrimary,
-            size: 20,
-          ),
-          onPressed: () => Get.back(),
-        ),
-      ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Form(
             key: controller.formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // Inline back button row
+                const SizedBox(height: 8),
+                GestureDetector(
+                  onTap: () => Get.back(),
+                  child: Container(
+                    width: 38,
+                    height: 38,
+                    decoration: BoxDecoration(
+                      color: AppColors.surface,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: AppColors.border),
+                    ),
+                    child: const Icon(
+                      Icons.arrow_back_ios_new_rounded,
+                      size: 16,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 20),
                 const Center(child: AppLogo(size: 72)),
                 const SizedBox(height: 20),
                 const Text('Create Account', style: AppTextStyles.heading1),
@@ -81,7 +91,9 @@ class SignupScreen extends StatelessWidget {
                   ),
                   validator: (val) {
                     if (val == null || val.isEmpty) return 'Email is required';
-                    if (!val.contains('@')) return 'Enter a valid email';
+                    if (!GetUtils.isEmail(val.trim())) {
+                      return 'Enter a valid email address';
+                    }
                     return null;
                   },
                 ),
@@ -100,8 +112,9 @@ class SignupScreen extends StatelessWidget {
                     ),
                   ),
                   validator: (val) {
-                    if (val == null || val.isEmpty)
+                    if (val == null || val.isEmpty) {
                       return 'Student ID is required';
+                    }
                     return null;
                   },
                 ),
@@ -131,10 +144,12 @@ class SignupScreen extends StatelessWidget {
                       ),
                     ),
                     validator: (val) {
-                      if (val == null || val.isEmpty)
+                      if (val == null || val.isEmpty) {
                         return 'Password is required';
-                      if (val.length < 6)
+                      }
+                      if (val.length < 6) {
                         return 'Minimum 6 characters required';
+                      }
                       return null;
                     },
                   ),
@@ -165,10 +180,12 @@ class SignupScreen extends StatelessWidget {
                       ),
                     ),
                     validator: (val) {
-                      if (val == null || val.isEmpty)
+                      if (val == null || val.isEmpty) {
                         return 'Please confirm your password';
-                      if (val != controller.passwordController.text)
+                      }
+                      if (val != controller.passwordController.text) {
                         return 'Passwords do not match';
+                      }
                       return null;
                     },
                   ),
@@ -218,7 +235,7 @@ class SignupScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 32),
               ],
             ),
           ),
@@ -226,5 +243,4 @@ class SignupScreen extends StatelessWidget {
       ),
     );
   }
-
 }

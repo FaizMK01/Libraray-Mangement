@@ -1,15 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 
-import '../models/google_book_model.dart';
-import '../routes/app_routes.dart';
+import '../models/gutenberg_book_model.dart';
 import '../utils/app_snackbar.dart';
 
-class AdminBookDetailsController extends GetxController {
-  final GoogleBookModel googleBook;
+class GutenbergBookDetailsController extends GetxController {
+  final GutenbergBookModel gutenbergBook;
 
-  AdminBookDetailsController({required this.googleBook});
+  GutenbergBookDetailsController({required this.gutenbergBook});
 
   final formKey = GlobalKey<FormState>();
   final titleController = TextEditingController();
@@ -25,10 +25,12 @@ class AdminBookDetailsController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    titleController.text = googleBook.title;
-    authorController.text = googleBook.author;
-    descriptionController.text = _truncateDescription(googleBook.description);
-    coverImageUrl.value = googleBook.coverImageUrl;
+    titleController.text = gutenbergBook.title;
+    authorController.text = gutenbergBook.author;
+    descriptionController.text = _truncateDescription(
+      gutenbergBook.description,
+    );
+    coverImageUrl.value = gutenbergBook.coverImageUrl;
   }
 
   String _truncateDescription(String text) {
@@ -43,7 +45,23 @@ class AdminBookDetailsController extends GetxController {
 
     try {
       final quantity = int.parse(quantityController.text.trim());
-      final pdfUrl = googleBook.bestReadUrl;
+      // Gutenberg books always have downloadable formats
+      // Save the best available URL (PDF > EPUB > TXT)
+      // The reader will use appropriate viewer based on format
+      final pdfUrl = gutenbergBook.bestReadUrl;
+
+      debugPrint('Gutenberg book PDF URL: $pdfUrl');
+      debugPrint('Gutenberg book EPUB URL: ${gutenbergBook.epubUrl}');
+      debugPrint('Gutenberg book TXT URL: ${gutenbergBook.txtUrl}');
+
+      if (pdfUrl == null) {
+        AppSnackbar.warning(
+          'No Downloadable Format',
+          'This book does not have any downloadable format available.',
+        );
+        isSaving.value = false;
+        return;
+      }
 
       final docRef = await _firestore.collection('books').add({
         'title': titleController.text.trim(),
@@ -53,12 +71,12 @@ class AdminBookDetailsController extends GetxController {
         'quantity': quantity,
         'available': quantity,
         'pdfUrl': pdfUrl,
-        'googleBookId': googleBook.id,
+        'googleBookId': null, // Gutenberg books don't have Google Book IDs
         'createdAt': FieldValue.serverTimestamp(),
       });
 
       Get.offNamed(
-        AppRoutes.bookSaved,
+        '/book-saved',
         arguments: {
           'title': titleController.text.trim(),
           'author': authorController.text.trim(),
@@ -68,6 +86,7 @@ class AdminBookDetailsController extends GetxController {
         },
       );
     } catch (e) {
+      debugPrint('Error saving book: $e');
       AppSnackbar.error(
         'Save Failed',
         'Unable to save the book to the library. Please try again.',
@@ -77,12 +96,5 @@ class AdminBookDetailsController extends GetxController {
     }
   }
 
-  @override
-  void onClose() {
-    titleController.dispose();
-    authorController.dispose();
-    descriptionController.dispose();
-    quantityController.dispose();
-    super.onClose();
-  }
+
 }

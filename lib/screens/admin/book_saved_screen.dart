@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 
 import '../../routes/app_routes.dart';
 import '../../utils/app_theme.dart';
-import '../../widgets/admin_logout_fab.dart';
 
 class BookSavedScreen extends StatelessWidget {
   const BookSavedScreen({super.key});
@@ -18,7 +17,6 @@ class BookSavedScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      floatingActionButton: const AdminLogoutFab(),
       appBar: AppBar(
         backgroundColor: AppColors.background,
         foregroundColor: AppColors.textPrimary,
@@ -54,7 +52,10 @@ class BookSavedScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 24),
-            const Text('Book Added Successfully', style: AppTextStyles.heading1),
+            const Text(
+              'Book Added Successfully',
+              style: AppTextStyles.heading1,
+            ),
             const SizedBox(height: 8),
             const Text(
               'The book has been saved to your library.',

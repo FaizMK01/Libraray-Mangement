@@ -1,23 +1,27 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../models/book_model.dart';
-import '../models/google_book_model.dart';
-import '../services/google_books_service.dart';
+import '../models/gutenberg_book_model.dart';
+import '../services/gutenberg_service.dart';
 import '../utils/app_snackbar.dart';
 import '../utils/network_helper.dart';
 
 class AddBookController extends GetxController {
   final searchController = TextEditingController();
-  final GoogleBooksService _booksService = GoogleBooksService();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   final libraryBooks = <BookModel>[].obs;
-  final searchResults = <GoogleBookModel>[].obs;
+  final searchResultsGutenberg = <GutenbergBookModel>[].obs;
   final isSearching = false.obs;
   final isLoadingLibrary = true.obs;
   final hasSearched = false.obs;
+  final suggestions = <GutenbergBookModel>[].obs; // NEW
+  final showSuggestions = false.obs; // NEW
+  Timer? _debounce; // NEW
 
   static const int _libraryLimit = 10;
 
@@ -35,20 +39,54 @@ class AddBookController extends GetxController {
         .limit(_libraryLimit)
         .snapshots()
         .listen((snapshot) {
-      libraryBooks.assignAll(
-        snapshot.docs
-            .map((doc) => BookModel.fromFirestore(doc.data(), doc.id))
-            .toList(),
-      );
-      isLoadingLibrary.value = false;
-    });
+          libraryBooks.assignAll(
+            snapshot.docs
+                .map((doc) => BookModel.fromFirestore(doc.data(), doc.id))
+                .toList(),
+          );
+          isLoadingLibrary.value = false;
+        });
   }
 
   void _onSearchChanged() {
-    if (searchController.text.trim().isEmpty && hasSearched.value) {
+    final query = searchController.text.trim();
+
+    if (query.isEmpty) {
       hasSearched.value = false;
-      searchResults.clear();
+      searchResultsGutenberg.clear();
+      suggestions.clear();
+      showSuggestions.value = false;
+      return;
     }
+
+    // Debounce — fetch suggestions after 500ms
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      _fetchSuggestions(query);
+    });
+  }
+
+  Future<void> _fetchSuggestions(String query) async {
+    try {
+      final results = await GutenbergService.searchBooks(query);
+      suggestions.assignAll(results.take(5).toList()); // sirf 5 suggestions
+      showSuggestions.value = suggestions.isNotEmpty;
+    } catch (_) {
+      suggestions.clear();
+      showSuggestions.value = false;
+    }
+  }
+
+  void selectSuggestion(GutenbergBookModel book) {
+    searchController.text = book.title;
+    showSuggestions.value = false;
+    suggestions.clear();
+    searchResultsGutenberg.assignAll([book]);
+    hasSearched.value = true;
+  }
+
+  void hideSuggestions() {
+    showSuggestions.value = false;
   }
 
   Future<void> searchBooks() async {
@@ -73,8 +111,8 @@ class AddBookController extends GetxController {
     hasSearched.value = true;
 
     try {
-      final results = await _booksService.searchBooks(query);
-      searchResults.assignAll(results);
+      final results = await GutenbergService.searchBooks(query);
+      searchResultsGutenberg.assignAll(results);
 
       if (results.isEmpty) {
         AppSnackbar.info(
@@ -94,10 +132,5 @@ class AddBookController extends GetxController {
     }
   }
 
-  @override
-  void onClose() {
-    searchController.removeListener(_onSearchChanged);
-    searchController.dispose();
-    super.onClose();
-  }
+
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../controllers/add_book_controller.dart';
+import '../../controllers/add_book_manual_controller.dart';
 import '../../controllers/admin_dashboard_controller.dart';
 import '../../routes/app_routes.dart';
 import '../../utils/app_theme.dart';
@@ -184,12 +185,21 @@ class AdminDashboardScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 16),
                     _ActionCard(
-                      title: 'Add New Book',
-                      subtitle: 'Search and add books from Google Books',
-                      icon: Icons.add_circle_outline_rounded,
+                      title: 'Search & Add Book',
+                      subtitle: 'Search and add books from Gutenberg',
+                      icon: Icons.search_rounded,
                       accentColor: AppColors.primary,
                       backgroundColor: AppColors.primaryLight,
                       onTap: () => _openAddBook(controller),
+                    ),
+                    const SizedBox(height: 12),
+                    _ActionCard(
+                      title: 'Add Book (Manual)',
+                      subtitle: 'Manually enter book details and PDF link',
+                      icon: Icons.add_circle_outline_rounded,
+                      accentColor: AppColors.success,
+                      backgroundColor: AppColors.successLight,
+                      onTap: () => _openAddBookManual(controller),
                     ),
                     const SizedBox(height: 12),
                     Obx(
@@ -223,6 +233,15 @@ class AdminDashboardScreen extends StatelessWidget {
     Get.toNamed(AppRoutes.addBook)?.then((_) {
       if (Get.isRegistered<AddBookController>()) {
         Get.delete<AddBookController>(force: true);
+      }
+      controller.refreshStats();
+    });
+  }
+
+  void _openAddBookManual(AdminDashboardController controller) {
+    Get.toNamed(AppRoutes.addBookManual)?.then((_) {
+      if (Get.isRegistered<AddBookManualController>()) {
+        Get.delete<AddBookManualController>(force: true);
       }
       controller.refreshStats();
     });

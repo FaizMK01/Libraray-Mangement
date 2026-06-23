@@ -4,10 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../models/book_model.dart';
-import '../routes/app_routes.dart';
 import '../utils/app_snackbar.dart';
-import '../utils/url_helper.dart';
-import 'library_details_controller.dart';
 
 class BookRequestController extends GetxController {
   final BookModel book;
@@ -74,23 +71,20 @@ class BookRequestController extends GetxController {
         'studentId': studentIdController.text.trim(),
         'purpose': purposeController.text.trim(),
         'status': 'pending',
-        'pdfUrl': UrlHelper.firstValid([
-          book.pdfUrl,
-          if (book.googleBookId != null && book.googleBookId!.isNotEmpty)
-            'https://books.google.com/books?id=${book.googleBookId}',
-        ]),
+        // Only save direct PDF URL for in-app reading
+        // Geo-restricted Google Books URLs fail in WebView
+        'pdfUrl': book.pdfUrl,
         'createdAt': FieldValue.serverTimestamp(),
       });
+
+      // Simply go back. The original LibraryDetailsScreen will update in real-time
+      // because LibraryDetailsController listens to Firestore snapshots.
+      Get.back();
 
       AppSnackbar.success(
         'Request Submitted',
         'Your book request has been sent to the admin for approval.',
       );
-
-      if (Get.isRegistered<LibraryDetailsController>()) {
-        Get.delete<LibraryDetailsController>(force: true);
-      }
-      Get.offNamed(AppRoutes.libraryDetails, arguments: book);
     } catch (e) {
       AppSnackbar.error(
         'Submission Failed',
@@ -101,11 +95,5 @@ class BookRequestController extends GetxController {
     }
   }
 
-  @override
-  void onClose() {
-    nameController.dispose();
-    studentIdController.dispose();
-    purposeController.dispose();
-    super.onClose();
-  }
+
 }

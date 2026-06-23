@@ -51,10 +51,5 @@ class AdminLoginController extends GetxController {
     Get.offAllNamed(AppRoutes.login);
   }
 
-  @override
-  void onClose() {
-    emailController.dispose();
-    passwordController.dispose();
-    super.onClose();
-  }
+
 }

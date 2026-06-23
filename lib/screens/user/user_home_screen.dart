@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 import '../../controllers/library_controller.dart';
@@ -81,40 +82,43 @@ class _UserBottomNav extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.06),
-            blurRadius: 12,
-            offset: const Offset(0, -4),
-          ),
-        ],
-      ),
-      child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-          child: Row(
-            children: [
-              Expanded(
-                child: _NavItem(
-                  icon: Icons.home_rounded,
-                  label: 'Home',
-                  isSelected: currentIndex == 0,
-                  onTap: () => onTap(0),
-                ),
-              ),
-              Expanded(
-                child: _NavItem(
-                  icon: Icons.person_rounded,
-                  label: 'Profile',
-                  isSelected: currentIndex == 1,
-                  onTap: () => onTap(1),
-                ),
-              ),
-            ],
-          ),
+    return SafeArea(
+      child: Container(
+        margin: EdgeInsets.only(
+          left: 80.w,
+          right: 80.w,
+          bottom: 16.h,
+        ),
+        padding: EdgeInsets.all(6.r),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(30.r),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.08),
+              blurRadius: 24.r,
+              offset: Offset(0, 8.h),
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _NavItem(
+              icon: Icons.home_rounded,
+              label: "Home",
+              isSelected: currentIndex == 0,
+              onTap: () => onTap(0),
+            ),
+            SizedBox(width: 8.w),
+            _NavItem(
+              icon: Icons.person_rounded,
+              label: "Profile",
+              isSelected: currentIndex == 1,
+              onTap: () => onTap(1),
+            ),
+          ],
         ),
       ),
     );
@@ -136,32 +140,44 @@ class _NavItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return InkWell(
+      borderRadius: BorderRadius.circular(18.r),
       onTap: onTap,
-      behavior: HitTestBehavior.opaque,
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(vertical: 10),
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+        padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.primaryLight : Colors.transparent,
-          borderRadius: BorderRadius.circular(14),
+          color: isSelected
+              ? AppColors.primary.withValues(alpha: 0.12)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(18.r),
         ),
-        child: Column(
+        child: Row(
           mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
               icon,
+              size: 22.r,
               color: isSelected ? AppColors.primary : AppColors.textHint,
-              size: 24,
             ),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                color: isSelected ? AppColors.primary : AppColors.textHint,
-              ),
+            AnimatedSwitcher(
+              duration: const Duration(milliseconds: 250),
+              child: isSelected
+                  ? Padding(
+                      padding: EdgeInsets.only(left: 8.w),
+                      child: Text(
+                        label,
+                        key: ValueKey(label),
+                        style: TextStyle(
+                          color: AppColors.primary,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 13.sp,
+                        ),
+                      ),
+                    )
+                  : const SizedBox.shrink(),
             ),
           ],
         ),
@@ -292,7 +308,7 @@ class _HomeTab extends StatelessWidget {
             return ListView.separated(
               padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
               itemCount: controller.filteredBooks.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 10),
+              separatorBuilder: (_, _) => const SizedBox(height: 10),
               itemBuilder: (context, index) {
                 final book = controller.filteredBooks[index];
                 return _BookListTile(book: book);
@@ -493,19 +509,6 @@ class _ProfileTab extends StatelessWidget {
                       },
                     ),
                     const SizedBox(height: 16),
-                    _buildLabel('Email'),
-                    const SizedBox(height: 6),
-                    TextFormField(
-                      controller: controller.emailController,
-                      readOnly: true,
-                      style: const TextStyle(color: AppColors.textSecondary),
-                      decoration: const InputDecoration(
-                        prefixIcon: Icon(
-                          Icons.email_outlined,
-                          color: AppColors.textHint,
-                        ),
-                      ),
-                    ),
                   ],
                 ),
               ),

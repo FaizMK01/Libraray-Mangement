@@ -1,3 +1,6 @@
+// lib/controllers/user_requests_controller.dart
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 
@@ -9,6 +12,9 @@ class UserRequestsController extends GetxController {
 
   final requests = <BookRequestModel>[].obs;
   final isLoading = true.obs;
+  final hasError = false.obs; // ← was missing
+
+  StreamSubscription? _sub;
 
   @override
   void onInit() {
@@ -17,18 +23,37 @@ class UserRequestsController extends GetxController {
   }
 
   void _listenToRequests() {
-    _firestore
+    // Only show spinner when list is genuinely empty (first visit).
+    // On back-navigation Firestore returns cached data instantly → no flicker.
+    if (requests.isEmpty) isLoading.value = true;
+    hasError.value = false;
+
+    _sub = _firestore
         .collection('requests')
         .orderBy('createdAt', descending: true)
         .snapshots()
-        .listen((snapshot) {
-      requests.assignAll(
-        snapshot.docs
-            .map((doc) => BookRequestModel.fromFirestore(doc.data(), doc.id))
-            .toList(),
-      );
-      isLoading.value = false;
-    });
+        .listen(
+          (snapshot) {
+            requests.assignAll(
+              snapshot.docs
+                  .map(
+                    (doc) => BookRequestModel.fromFirestore(doc.data(), doc.id),
+                  )
+                  .toList(),
+            );
+            isLoading.value = false;
+          },
+          onError: (_) {
+            hasError.value = true;
+            isLoading.value = false;
+          },
+        );
+  }
+
+  /// Called by the Retry button in the error state.
+  void refresh() {
+    _sub?.cancel();
+    _listenToRequests();
   }
 
   Future<void> approveRequest(BookRequestModel request) async {
@@ -37,7 +62,6 @@ class UserRequestsController extends GetxController {
         'status': 'approved',
         'updatedAt': FieldValue.serverTimestamp(),
       });
-
       AppSnackbar.success(
         'Request Approved',
         "${request.userName}'s request for \"${request.bookTitle}\" has been approved.",
@@ -56,7 +80,6 @@ class UserRequestsController extends GetxController {
         'status': 'rejected',
         'updatedAt': FieldValue.serverTimestamp(),
       });
-
       AppSnackbar.warning(
         'Request Rejected',
         "${request.userName}'s request for \"${request.bookTitle}\" has been rejected.",
@@ -67,5 +90,11 @@ class UserRequestsController extends GetxController {
         'Unable to reject this request. Please try again.',
       );
     }
+  }
+
+  @override
+  void onClose() {
+    _sub?.cancel();
+    super.onClose();
   }
 }
