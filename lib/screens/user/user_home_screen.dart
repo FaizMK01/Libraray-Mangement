@@ -46,7 +46,7 @@ class UserHomeScreen extends StatelessWidget {
             Icon(Icons.library_books_rounded, color: Colors.white, size: 22),
             SizedBox(width: 10),
             Text(
-              'Library',
+              'Library Management',
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 18,
@@ -84,11 +84,7 @@ class _UserBottomNav extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Container(
-        margin: EdgeInsets.only(
-          left: 80.w,
-          right: 80.w,
-          bottom: 16.h,
-        ),
+        margin: EdgeInsets.only(left: 80.w, right: 80.w, bottom: 16.h),
         padding: EdgeInsets.all(6.r),
         decoration: BoxDecoration(
           color: Colors.white,

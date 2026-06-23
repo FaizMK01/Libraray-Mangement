@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:library_mangement/controllers/library_details_controller.dart';
+import 'package:library_mangement/routes/app_routes.dart';
 
 import '../models/book_model.dart';
 import '../utils/app_snackbar.dart';
@@ -85,6 +87,11 @@ class BookRequestController extends GetxController {
         'Request Submitted',
         'Your book request has been sent to the admin for approval.',
       );
+
+      if (Get.isRegistered<LibraryDetailsController>()) {
+        Get.delete<LibraryDetailsController>(force: true);
+      }
+      Get.offNamed(AppRoutes.libraryDetails, arguments: book);
     } catch (e) {
       AppSnackbar.error(
         'Submission Failed',
@@ -94,6 +101,4 @@ class BookRequestController extends GetxController {
       isSubmitting.value = false;
     }
   }
-
-
 }
