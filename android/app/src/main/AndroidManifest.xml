@@ -2,7 +2,7 @@
     <uses-permission android:name="android.permission.INTERNET"/>
     <application
         android:label="Lib Mang"
-        android:name="Lib Mang"
+        android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
